@@ -3,9 +3,9 @@ name: Merge-upstream
 on:
   schedule:
     - cron: 55 14 * * *
-#  push:
-#    branches: 
-#    - master
+  push:
+    branches: 
+    - master
   watch:
     types: started
 
