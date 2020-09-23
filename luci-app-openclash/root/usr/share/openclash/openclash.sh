@@ -18,30 +18,13 @@ disable_masq_cache=$(uci get openclash.config.disable_masq_cache 2>/dev/null)
 if_restart=0
 
 urlencode() {
-local data
-    if [ "$#" -eq 1 ]; then
-       data=$(curl -s -o /dev/null -w %{url_effective} --get --data-urlencode "$1" "")
-       if [ ! -z "$data" ]; then
-           echo "$(echo ${data##/?} |sed 's/\//%2f/g' |sed 's/:/%3a/g' |sed 's/?/%3f/g' |sed 's/(/%28/g' |sed 's/)/%29/g' |sed 's/\^/%5e/g' |sed 's/=/%3d/g' |sed 's/|/%7c/g')"
-       fi
-    fi
-}
-
-rawurlencode() {
-  local string="${1}"
-  local strlen=${#string}
-  local encoded=""
-  local pos c o
-  for (( pos=0 ; pos<strlen ; pos++ )); do
-     c=${string:$pos:1}
-     case "$c" in
-        [-_.~a-zA-Z0-9] ) o="${c}" ;;
-     * )
-        printf -v o '%%%02x' "'$c"
-     esac
-     encoded+="${o}"
-  done
-  echo "${encoded}"
+   local data
+   if [ "$#" -eq 1 ]; then
+      data=$(curl -s -o /dev/null -w %{url_effective} --get --data-urlencode "$1" "")
+      if [ ! -z "$data" ]; then
+         echo "$(echo ${data##/?} |sed 's/\//%2f/g' |sed 's/:/%3a/g' |sed 's/?/%3f/g' |sed 's/(/%28/g' |sed 's/)/%29/g' |sed 's/\^/%5e/g' |sed 's/=/%3d/g' |sed 's/|/%7c/g')"
+      fi
+   fi
 }
 
 kill_watchdog() {
@@ -278,7 +261,7 @@ sub_info_get()
    fi
    
    if [ "$sub_convert" -eq 0 ]; then
-      subscribe_url="$address"
+      subscribe_url=$address
    elif [ "$sub_convert" -eq 1 ] && [ -n "$template" ]; then
       subscribe_url=$(urlencode "$address")
       if [ "$template" != "0" ]; then
@@ -296,10 +279,10 @@ sub_info_get()
          fi
          subscribe_url_param="?target=clash&new_name=true&url=$subscribe_url&config=$template_path_encode&include=$key_match_param&exclude=$key_ex_match_param&emoji=$emoji&list=false&sort=$sort&udp=$udp&scv=$skip_cert_verify&append_type=$node_type&fdn=true"
       else
-         subscribe_url="$address"
+         subscribe_url=$address
       fi
    else
-      subscribe_url="$address"
+      subscribe_url=$address
    fi
 
    echo "开始更新配置文件【$name】..." >$START_LOG
